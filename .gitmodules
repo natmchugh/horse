@@ -1,0 +1,3 @@
+[submodule "phploc"]
+	path = phploc
+	url = git://github.com/natmchugh/phploc.git
