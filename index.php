@@ -2,11 +2,15 @@
 <?php
 require __DIR__.'/CommitCounter.php';
 require __DIR__.'/GitRepoFetcher.php';
+require __DIR__.'/RunLogger.php';
 require __DIR__.'/Command.php';
 
 if (!empty($_POST) && isset($_POST['url'])) {
 	$url = $_POST['url'];
 	$repoPath = "/tmp/".md5($_POST['url']);
+
+	$logger = new RunLogger($url, $repoPath);
+	$logger->logRun();
 	$cmds = array();
 	$repo = new GitRepoFetcher($repoPath);
 	$updated = $repo->getChanges();

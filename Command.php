@@ -1,5 +1,5 @@
 <?php
-require 'PHPLOC/Autoload.php';
+require __DIR__.'/phploc/PHPLOC/Autoload.php';
 
 class PHPLOC_Horse_Command extends PHPLOC_TextUI_Command {
 
