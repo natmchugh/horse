@@ -25,7 +25,22 @@ if (!empty($_POST) && isset($_POST['url'])) {
 }
 ?>
 </pre>
-
+<table>
+<?php foreach (RunLogger::listProjects() as $project): ?>
+	<tr>
+		<td><?php echo $project->name; ?></td>
+		<td><?php echo $project->url; ?></td>
+		<td><?php echo $project->runs; ?></td>
+		<td><?php echo $project->last_run; ?></td>
+		<td>
+			<form method="POST" action="#">
+				<input type="hidden" name="url" value="<?php echo $project->url; ?>"/>
+				<input type="submit" value="run again">
+			</form>
+		</td>
+	</tr>
+<?php endforeach; ?>
+</table>
 <div>
 <?php echo file_get_contents('/var/www/.ssh/id_rsa.pub'); ?>
 </div>

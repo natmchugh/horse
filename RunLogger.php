@@ -25,6 +25,18 @@ class RunLogger {
 		$this->insertRun($mysqli, $project_id);
 	}
 
+	static public function listProjects() {
+		$mysqli = new mysqli("localhost", "root", "root", "horse");
+		$query = "SELECT project.*, count(run.id) AS runs, MAX(run.date) AS last_run from project".
+		" LEFT JOIN run ON project.id = run.project_id GROUP BY project.id";
+		$projects = array();
+		$result = $mysqli->query($query);
+		while ($project = $result->fetch_object()) {
+			$projects[] = $project;
+		}
+		return $projects;
+	}
+
 	private function checkIfProjectExists($mysqli) {
 		$hash = md5($this->_repoURL);
 		$query = "SELECT id from project WHERE hash =  '{$hash}'";
