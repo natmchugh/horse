@@ -9,22 +9,36 @@ if (!empty($_POST) && isset($_POST['url'])) {
 	$url = $_POST['url'];
 	$repoPath = "/tmp/".md5($_POST['url']);
 
-	$logger = new RunLogger($url, $repoPath);
-	$logger->logRun();
-	$cmds = array();
-	$repo = new GitRepoFetcher($repoPath);
+	$repo = new GitRepoFetcher($repoPath, $_POST['url']);
 	$updated = $repo->getChanges();
 	
-
+	if ($updated) {
+		$logger = new RunLogger($url, $repoPath);
+		$logger->logRun();
+	} else {
+		var_dump('nothing doin');
+	}
 	$command = new PHPLOC_Horse_Command();
     $command->main(array($repoPath), array(), array());
 
     $commits = new CommitCounter($repoPath);
 
-    var_dump($commits->getAuthors());
+    $authorDataString = '';
+    $authorNameString = '';
+    foreach ($commits->getAuthors() as $author => $commits) {
+    	$angle = ($commits / 16) * 360;
+    	$authorDataString .= $commits.',';
+    	$authorNameString .= $author.'|';
+    }
+    $authorDataString = trim($authorDataString, ',');
+    $authorNameString = trim($authorNameString, '|');
+    $url = "http://chart.apis.google.com/chart?chs=300x225&cht=p&chd=t:$authorDataString&chdl=$authorNameString&chp=0.233&chtt=Git+commits&chco=FFFF10,FF0000";
 }
 ?>
 </pre>
+<?php if ($url) :?>
+<img src="<?php echo $url ?>">
+<?php endif; ?>
 <table>
 <?php foreach (RunLogger::listProjects() as $project): ?>
 	<tr>

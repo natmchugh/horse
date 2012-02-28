@@ -3,10 +3,11 @@
 class GitRepoFetcher {
 	
 	private $_repoDirectory = '';
+	private $_repoUrl = '';
 
-	public function __construct($directory) {
+	public function __construct($directory, $url) {
 		$this->_repoDirectory = $directory;
-		return $this;
+		$this->_repoUrl = $url;
 	}
 
 	public function getChanges() {
@@ -18,7 +19,8 @@ class GitRepoFetcher {
 	}
 
 	private function getNewRepo() {
-		exec("git clone {$_POST['url']} {$this->_repoDirectory}", $output, $returnCode);
+		exec("git clone {$this->_repoUrl} {$this->_repoDirectory}", $output, $returnCode);
+		var_dump("git clone {$this->_repoUrl} {$this->_repoDirectory}");
 		return $returnCode == 0;
 	}
 
@@ -29,6 +31,18 @@ class GitRepoFetcher {
 		var_dump(getcwd());
 		exec("git pull origin master",$output, $returnCode);
 		chdir($backUpDir);
-		return $returnCode == 0;
+		if ($returnCode == 0 && $this->thereAreChanges($output)) {
+			return true;
+		}
+		return false;
+	}
+
+	private function thereAreChanges($output) {
+		foreach ($output as $line) {
+			if (false !== strpos($line, 'Already up-to-date.')) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
